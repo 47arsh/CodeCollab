@@ -2,10 +2,11 @@ import React from 'react'
 import {v4 as uuidV4} from 'uuid'
 import {useState} from 'react'
 import {toast} from 'react-hot-toast'
-// import {useNavigate} from 'react-router-dom'
+import {useNavigate} from 'react-router-dom'
 
 const Home = () => {
   const [roomId, setRoomId] = useState('')
+  const navigate = useNavigate()
   const createNewRoom = (e) => {
     e.preventDefault()
     const id = uuidV4()
@@ -15,6 +16,16 @@ const Home = () => {
     // navigate(`/editor/${id}`)
   }
 
+  const joinRoom = () => {
+    if (!roomId) {
+      // toast.error('Please enter a room ID')
+      console.error("room id is required to join a room")
+      return
+    }
+    navigate(`/editor/${roomId}` , {
+      state: {roomId}
+    })
+  }
   return (
     <div className="min-h-screen overflow-hidden bg-[radial-gradient(circle_at_top_left,#164e63_0,#0f172a_34%,#07111f_72%)] px-5 py-6 text-slate-100 sm:px-8 lg:px-12">
       <div className="mx-auto flex min-h-[calc(100vh-3rem)] w-full max-w-6xl flex-col">
@@ -63,7 +74,7 @@ const Home = () => {
                   value={roomId}
                   onChange={(e) => setRoomId(e.target.value)}
                 />
-                <button className="min-h-12 rounded-xl bg-cyan-300 px-6 font-bold text-slate-950 shadow-lg shadow-cyan-500/20 transition hover:bg-cyan-200 focus:outline-none focus:ring-4 focus:ring-cyan-300/30">
+                <button onClick={joinRoom} className="min-h-12 rounded-xl bg-cyan-300 px-6 font-bold text-slate-950 shadow-lg shadow-cyan-500/20 transition hover:bg-cyan-200 focus:outline-none focus:ring-4 focus:ring-cyan-300/30">
                   Join room
                 </button>
               </div>

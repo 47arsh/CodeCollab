@@ -1,6 +1,17 @@
 import React from 'react'
+import {v4 as uuidV4} from 'uuid'
+import {useState} from 'react'
+import {useNavigate} from 'react-router-dom'
 
 const Home = () => {
+  const [roomId, setRoomId] = useState('')
+  const createNewRoom = (e) => {
+    e.preventDefault()
+    const id = uuidV4()
+    setRoomId(id)
+    // navigate(`/editor/${id}`)
+  }
+
   return (
     <div className="min-h-screen overflow-hidden bg-[radial-gradient(circle_at_top_left,#164e63_0,#0f172a_34%,#07111f_72%)] px-5 py-6 text-slate-100 sm:px-8 lg:px-12">
       <div className="mx-auto flex min-h-[calc(100vh-3rem)] w-full max-w-6xl flex-col">
@@ -46,6 +57,8 @@ const Home = () => {
                   type="text"
                   className="min-h-12 flex-1 rounded-xl border border-white/10 bg-slate-950/60 px-4 text-base text-white outline-none transition placeholder:text-slate-500 focus:border-cyan-300 focus:ring-4 focus:ring-cyan-300/10"
                   placeholder="Room ID"
+                  value={roomId}
+                  onChange={(e) => setRoomId(e.target.value)}
                 />
                 <button className="min-h-12 rounded-xl bg-cyan-300 px-6 font-bold text-slate-950 shadow-lg shadow-cyan-500/20 transition hover:bg-cyan-200 focus:outline-none focus:ring-4 focus:ring-cyan-300/30">
                   Join room
@@ -54,7 +67,7 @@ const Home = () => {
 
               <p className="mt-4 text-sm text-slate-400">
                 No invite yet?{' '}
-                <a href="/" className="font-semibold text-cyan-200 underline decoration-cyan-200/30 underline-offset-4 transition hover:text-white">
+                <a onClick={createNewRoom} href="/" className="font-semibold text-cyan-200 underline decoration-cyan-200/30 underline-offset-4 transition hover:text-white">
                   Create a new room
                 </a>
               </p>
@@ -100,6 +113,9 @@ const Home = () => {
             </div>
           </section>
         </main>
+        <footer className="text-center text-sm text-slate-500">
+          Made with ❤️ by Arshdeep Singh.
+        </footer>
       </div>
     </div>
   )

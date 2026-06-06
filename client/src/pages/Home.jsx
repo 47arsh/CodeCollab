@@ -1,7 +1,8 @@
 import React from 'react'
 import {v4 as uuidV4} from 'uuid'
 import {useState} from 'react'
-import {useNavigate} from 'react-router-dom'
+import {toast} from 'react-hot-toast'
+// import {useNavigate} from 'react-router-dom'
 
 const Home = () => {
   const [roomId, setRoomId] = useState('')
@@ -9,6 +10,8 @@ const Home = () => {
     e.preventDefault()
     const id = uuidV4()
     setRoomId(id)
+    // toast.success('Created a new room')
+    console.log("new room created with id:", id)
     // navigate(`/editor/${id}`)
   }
 

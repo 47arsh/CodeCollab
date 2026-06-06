@@ -6,6 +6,7 @@ import {useNavigate} from 'react-router-dom'
 
 const Home = () => {
   const [roomId, setRoomId] = useState('')
+  const [username, setUsername] = useState('')
   const navigate = useNavigate()
   const createNewRoom = (e) => {
     e.preventDefault()
@@ -17,14 +18,13 @@ const Home = () => {
   }
 
   const joinRoom = () => {
-    if (!roomId) {
-      // toast.error('Please enter a room ID')
-      console.error("room id is required to join a room")
+    if (!roomId || !username) {
+      // toast.error('Please enter a room ID and username')
+      console.error("room id and username are required to join a room")
       return
     }
-    navigate(`/editor/${roomId}` , {
-      state: {roomId}
-    })
+    localStorage.setItem('username', username)
+    navigate(`/editor/${roomId}`)
   }
   return (
     <div className="min-h-screen overflow-hidden bg-[radial-gradient(circle_at_top_left,#164e63_0,#0f172a_34%,#07111f_72%)] px-5 py-6 text-slate-100 sm:px-8 lg:px-12">
@@ -74,8 +74,16 @@ const Home = () => {
                   value={roomId}
                   onChange={(e) => setRoomId(e.target.value)}
                 />
+                <input
+                  id="username"
+                  type="text"
+                  className="min-h-12 flex-1 rounded-xl border border-white/10 bg-slate-950/60 px-4 text-base text-white outline-none transition placeholder:text-slate-500 focus:border-cyan-300 focus:ring-4 focus:ring-cyan-300/10"
+                  placeholder="Username"
+                  value={username}
+                  onChange={(e) => setUsername(e.target.value)}
+                />
                 <button onClick={joinRoom} className="min-h-12 rounded-xl bg-cyan-300 px-6 font-bold text-slate-950 shadow-lg shadow-cyan-500/20 transition hover:bg-cyan-200 focus:outline-none focus:ring-4 focus:ring-cyan-300/30">
-                  Join room
+                  Join Room
                 </button>
               </div>
 

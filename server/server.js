@@ -7,14 +7,17 @@ const executeCode = require("./services/executeCode.js");
 
 
 const app = express();
-app.use(cors());
+app.use(cors({
+    origin: "https://code-collab-chi-nine.vercel.app",
+    methods: ["GET", "POST"],
+}));
 app.use(express.json());
 
 const server = http.createServer(app);
 
 const io = new Server(server, {
   cors: {
-    origin: "*",
+    origin: "https://code-collab-chi-nine.vercel.app",
     methods: ["GET", "POST"],
   },
 });

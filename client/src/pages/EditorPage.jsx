@@ -1,14 +1,22 @@
-import React , {useState} from "react";
+import React , {useState , useEffect} from "react";
 import { Link, useParams , useNavigate } from "react-router-dom";
 import Client from "../components/Client";
 import Editor from "../components/Editor";
 const EditorPage = () => {
+
+  useEffect(()=>{
+    console.log("EditorPage component mounted")
+    return () => {
+      console.log("EditorPage component unmounted")
+    }
+  }, []);
   const { roomId } = useParams();
   const navigate = useNavigate();
 
   const username = localStorage.getItem("username") || "Anonymous";
   const [clients, setClients] = useState([
     {
+      socketId: "local",
       username,
     },
   ]);
@@ -29,6 +37,8 @@ const EditorPage = () => {
     localStorage.removeItem('username')
     navigate('/')
   }
+
+  const languages = [ "javascript", "python", "java", "cpp" ];
 
   return (
     <div className="min-h-screen overflow-hidden bg-[radial-gradient(circle_at_top_left,#164e63_0,#0f172a_34%,#07111f_72%)] px-5 py-6 text-slate-100 sm:px-8 lg:px-12">
@@ -88,7 +98,7 @@ const EditorPage = () => {
       <div className="mt-3 space-y-3">
 
         {clients.map((client, index) => (
-          <Client key={index} username={client.username} />
+          <Client key={client.socketId} username={client.username} />
         ))}
 
       </div>
@@ -127,9 +137,17 @@ const EditorPage = () => {
     {/* Right Side */}
     <div className="flex items-center gap-2 text-xs font-semibold text-slate-400">
 
-      <span className="rounded-md bg-white/5 px-2 py-1">
-        {language}
-      </span>
+      <select 
+        value={language}
+        onChange={(e) => setLanguage(e.target.value)}
+        className="rounded-md bg-white/5 px-2 py-1 text-sm text-slate-300 shadow-sm backdrop-blur focus:outline-none focus:ring-2 focus:ring-cyan-300 focus:ring-offset-2 focus:ring-offset-slate-900"
+      >
+        {languages.map((lang) => (
+          <option key={lang} value={lang} className="bg-slate-900 text-white">
+            {lang}
+          </option>
+        ))}
+      </select>
 
       <span className="rounded-md bg-white/5 px-2 py-1">
         Auto Sync

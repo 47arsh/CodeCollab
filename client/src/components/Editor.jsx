@@ -2,6 +2,9 @@ import React, { useState } from "react";
 import CodeMirror from "@uiw/react-codemirror";
 import { javascript } from "@codemirror/lang-javascript";
 import { dracula } from "@uiw/codemirror-theme-dracula";
+import { cpp } from "@codemirror/lang-cpp";
+import { python } from "@codemirror/lang-python";
+import { java } from "@codemirror/lang-java";
 
 const Editor = ({language}) => {
     console.log("Editor component rendered with language:", language);
@@ -11,13 +14,19 @@ const Editor = ({language}) => {
     setCode(value);
   };
 
+  const languageExtensions = {
+    javascript: javascript(),
+    python: python(),
+    java: java(),
+    cpp: cpp(),
+  };
   return (
     <div className="h-full">
       <CodeMirror
         value={code}
         height="100%"
         theme={dracula}
-        extensions={[javascript()]}
+        extensions={[languageExtensions[language] || javascript()]}
         onChange={handleCodeChange}
       />
     </div>

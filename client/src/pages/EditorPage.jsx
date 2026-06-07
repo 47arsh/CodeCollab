@@ -18,7 +18,11 @@ const EditorPage = () => {
     },
   ]);
   const [language , setLanguage] = useState("javascript");
-  const [output, setOutput] = useState("");
+  const [executionResult, setExecutionResult] = useState({
+    stdout: "",
+    stderr: "",
+    exitCode: null,
+  });
   const [isRunning, setIsRunning] = useState(false);
 
   const codeRef = useRef("");
@@ -70,30 +74,40 @@ const EditorPage = () => {
   }
 
   const handleRunCode = async () => {
-    try{
-      setIsRunning(true);
-      setOutput("Running code...");
-      const response = await axios.post("http://localhost:5000/run", {
+  try {
+    setIsRunning(true);
+
+    setExecutionResult({
+      stdout: "",
+      stderr: "Running code...",
+      exitCode: null,
+    });
+
+    const response = await axios.post(
+      "http://localhost:5000/run",
+      {
         code: codeRef.current,
-      });
-
-      const result = response.data;
-
-      if(result.exitCode === 0){
-        setOutput(result.stdout);
       }
-      else{
-        setOutput(result.stderr);
-      }
-    }
-    catch(err){
-      toast.error('Error running code')
-      // console.error("Error running code:", err)
-    }
-    finally{
-      setIsRunning(false);
-    }
+    );
+
+    setExecutionResult(response.data);
+
+  } catch (err) {
+
+    toast.error("Error running code");
+
+    setExecutionResult({
+      stdout: "",
+      stderr: "Failed to connect to server.",
+      exitCode: 1,
+    });
+
+  } finally {
+
+    setIsRunning(false);
+
   }
+};
   const languages = [ "javascript", "python", "java", "cpp" ];
 
   return (
@@ -304,13 +318,36 @@ const EditorPage = () => {
 </aside>
 
 </main>
-<div className="mt-5 rounded-2xl border border-white/10 bg-white/5 p-4 text-sm text-slate-300 shadow-sm backdrop-blur">
-        <h3 className="text-center text-lg font-bold text-white">
-          Output:
-        </h3>
-        <pre className="mt-2 max-h-40 overflow-auto rounded-md bg-slate-900 p-3 text-xs text-green-400">
-          {output || "Run your code to see the output here..."}
-        </pre>
+<div className="mt-4 bg-black rounded-lg p-4 border border-gray-700">
+  <div className="flex items-center justify-between mb-3">
+    <h3 className="text-white font-semibold">
+      Terminal
+    </h3>
+
+    {executionResult.exitCode === 0 && (
+      <span className="text-green-400 text-sm">
+        ✓ Success
+      </span>
+    )}
+
+    {executionResult.exitCode === 1 && (
+      <span className="text-red-400 text-sm">
+        ✗ Runtime Error
+      </span>
+    )}
+
+    {executionResult.exitCode === null && isRunning && (
+      <span className="text-yellow-400 text-sm">
+        Running...
+      </span>
+    )}
+  </div>
+
+  <pre className="text-green-400 whitespace-pre-wrap font-mono text-sm">
+    {executionResult.stdout ||
+      executionResult.stderr ||
+      "Run your code to see the output..."}
+  </pre>
 </div>
     </div>
 

@@ -5,7 +5,18 @@ A full-stack realtime collaborative code editor built using **React**, **Express
 The project focuses on understanding the underlying concepts rather than simply reproducing tutorial code. It was built incrementally from first principles, emphasizing clean state management, event-driven architecture, and separation of concerns.
 
 ---
+## 🌐 Live Demo
 
+Frontend:
+https://code-collab-chi-nine.vercel.app/
+
+Backend:
+https://codecollab-j5k7.onrender.com
+
+> Note:
+> The backend is hosted on Render's free tier and may take 30-60 seconds to wake up after periods of inactivity.
+
+---
 ## 📸 Screenshots
 
 ### Home Page

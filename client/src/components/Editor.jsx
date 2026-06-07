@@ -10,6 +10,7 @@ const Editor = ({language , roomId , codeRef}) => {
   console.log("Editor component rendered with language:", language);
 
   const [code, setCode] = useState("// Start coding...");
+  const editorViewRef = useRef(null);
 
   useEffect(() => {
     socket.on("code-change", ({ code }) => {
@@ -20,7 +21,11 @@ const Editor = ({language , roomId , codeRef}) => {
     return () => {
       socket.off("code-change");
     };
-    }, []);
+}, []);
+
+    useEffect(() => {
+        editorViewRef.current?.focus();
+    },[])
 
   const handleCodeChange = (value) => {
     setCode(value);
@@ -48,6 +53,10 @@ const Editor = ({language , roomId , codeRef}) => {
         theme={dracula}
         extensions={[languageExtensions[language] || javascript()]}
         onChange={handleCodeChange}
+        onCreateEditor={(editorView) => {
+          editorViewRef.current = editorView;
+        }
+        }
       />
     </div>
   );

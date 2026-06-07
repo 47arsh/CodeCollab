@@ -63,7 +63,7 @@ io.on("connection", (socket) => {
     });
   });
 
-  socket.on("disconnect", () => {
+  socket.on("disconnecting", () => {
     const username = userSocketMap[socket.id] || "Unknown user";
     
     for(const roomId of socket.rooms){

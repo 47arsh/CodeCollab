@@ -1,17 +1,19 @@
 import React , {useState} from "react";
 import { Link, useParams , useNavigate } from "react-router-dom";
 import Client from "../components/Client";
+import Editor from "../components/Editor";
 const EditorPage = () => {
   const { roomId } = useParams();
   const navigate = useNavigate();
 
-  const username =
-    localStorage.getItem("username") || "Anonymous";
+  const username = localStorage.getItem("username") || "Anonymous";
   const [clients, setClients] = useState([
     {
       username,
     },
   ]);
+
+  const [language , setLanguage] = useState("javascript");
   const copyRoomId = async() => {
     try{
       await navigator.clipboard.writeText(roomId)
@@ -126,7 +128,7 @@ const EditorPage = () => {
     <div className="flex items-center gap-2 text-xs font-semibold text-slate-400">
 
       <span className="rounded-md bg-white/5 px-2 py-1">
-        JavaScript
+        {language}
       </span>
 
       <span className="rounded-md bg-white/5 px-2 py-1">
@@ -140,13 +142,7 @@ const EditorPage = () => {
   {/* Editor Body */}
   <div className="min-h-[550px] p-5">
 
-    <div className="flex h-full min-h-[510px] items-center justify-center rounded-xl border border-dashed border-white/10">
-
-      <p className="text-sm text-slate-500">
-        Collaborative editor coming soon...
-      </p>
-
-    </div>
+    <Editor language={language} />
 
   </div>
 

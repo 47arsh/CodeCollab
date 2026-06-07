@@ -1,5 +1,5 @@
 import {BrowserRouter, Routes, Route} from 'react-router-dom'
-// import {Toaster} from 'react-hot-toast'
+import {Toaster} from 'react-hot-toast'
 import Home from './pages/Home'
 import EditorPage from './pages/EditorPage'
 
@@ -7,7 +7,7 @@ function App() {
   return (
     <div>
     <div>
-      {/* <Toaster 
+      <Toaster 
         position="top-right"
         toastOptions={{
           duration: 2000,
@@ -16,7 +16,7 @@ function App() {
             color: '#fff',
           },
         }}
-      /> */}
+      />
     </div>
     <BrowserRouter>
       <Routes>

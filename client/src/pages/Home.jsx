@@ -12,15 +12,15 @@ const Home = () => {
     e.preventDefault()
     const id = uuidV4()
     setRoomId(id)
-    // toast.success('Created a new room')
-    console.log("new room created with id:", id)
+    toast.success('Created a new room')
+    // console.log("new room created with id:", id)
     // navigate(`/editor/${id}`)
   }
 
   const joinRoom = () => {
     if (!roomId || !username) {
-      // toast.error('Please enter a room ID and username')
-      console.error("room id and username are required to join a room")
+      toast.error('Please enter a room ID and username')
+      // console.error("room id and username are required to join a room")
       return
     }
     localStorage.setItem('username', username)

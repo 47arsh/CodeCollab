@@ -3,9 +3,9 @@ import { Link, useParams , useNavigate } from "react-router-dom";
 import Client from "../components/Client";
 import Editor from "../components/Editor";
 import { socket } from "../socket.js";
+import {toast} from 'react-hot-toast';
+
 const EditorPage = () => {
-
-
   const { roomId } = useParams();
   const navigate = useNavigate();
 
@@ -51,11 +51,12 @@ const EditorPage = () => {
   const copyRoomId = async() => {
     try{
       await navigator.clipboard.writeText(roomId)
-      // toast.success('Room ID copied to clipboard')
-      console.log("Room ID copied to clipboard:", roomId)
+      toast.success('Room ID copied to clipboard')
+      // console.log("Room ID copied to clipboard:", roomId)
     }
     catch(err){
-      console.error("Failed to copy room ID:", err)
+      toast.error('Failed to copy room ID')
+      //console.error("Failed to copy room ID:", err)
     }
   }
 
@@ -124,7 +125,7 @@ const EditorPage = () => {
       <div className="mt-3 space-y-3">
 
         {clients.map((client, index) => (
-          <Client key={client.socketId} username={client.username} />
+          <Client key={client.socketId} username={client.username} isCurrentUser={client.socketId === socket.id} />
         ))}
 
       </div>

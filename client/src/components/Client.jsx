@@ -1,6 +1,6 @@
 import React from "react";
 
-const Client = ({ username }) => {
+const Client = ({ username, isCurrentUser }) => {
   return (
     <div className="flex items-center gap-3">
       <div className="grid size-9 place-items-center rounded-lg bg-cyan-300 font-bold text-slate-950">
@@ -13,7 +13,7 @@ const Client = ({ username }) => {
         </p>
 
         <p className="text-xs text-slate-500">
-          You
+          {isCurrentUser ? "You" : "User"}
         </p>
       </div>
     </div>

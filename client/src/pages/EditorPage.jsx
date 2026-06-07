@@ -84,7 +84,7 @@ const EditorPage = () => {
     });
 
     const response = await axios.post(
-      "http://localhost:5000/run",
+      `${import.meta.env.VITE_BACKEND_URL}/run`,
       {
         code: codeRef.current,
       }

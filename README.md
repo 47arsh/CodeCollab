@@ -6,6 +6,26 @@ The project focuses on understanding the underlying concepts rather than simply 
 
 ---
 
+## 📸 Screenshots
+
+### Home Page
+
+![Home Page](./assets/home.png)
+
+---
+
+### Collaborative Editor
+
+![Editor](./assets/editor.png)
+
+---
+
+### Run Code Terminal
+
+![Terminal](./assets/run-code.png)
+
+---
+
 ## ✨ Features
 
 ### Realtime Collaboration

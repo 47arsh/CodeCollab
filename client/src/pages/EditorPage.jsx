@@ -2,12 +2,15 @@ import React , {useState , useEffect} from "react";
 import { Link, useParams , useNavigate } from "react-router-dom";
 import Client from "../components/Client";
 import Editor from "../components/Editor";
+import { socket } from "../socket.js";
 const EditorPage = () => {
 
   useEffect(()=>{
-    console.log("EditorPage component mounted")
+    console.log("Connecting to socket server...")
+    socket.connect();
     return () => {
-      console.log("EditorPage component unmounted")
+      console.log("Disconnecting from socket server...")
+      socket.disconnect();
     }
   }, []);
   const { roomId } = useParams();

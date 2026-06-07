@@ -102,17 +102,128 @@ const EditorPage = () => {
   </aside>
 
   {/* Editor Section */}
-  <section>
+<section className="overflow-hidden rounded-2xl border border-white/10 bg-slate-950/80 shadow-2xl shadow-slate-950/50">
 
-  </section>
+  {/* Editor Toolbar */}
+  <div className="flex flex-wrap items-center justify-between gap-3 border-b border-white/10 bg-white/5 px-4 py-3">
+
+    {/* Left Side */}
+    <div className="flex items-center gap-3">
+
+      <div className="flex gap-2">
+        <span className="size-3 rounded-full bg-rose-400" />
+        <span className="size-3 rounded-full bg-amber-300" />
+        <span className="size-3 rounded-full bg-emerald-300" />
+      </div>
+
+      <span className="font-mono text-sm text-slate-400">
+        main.js
+      </span>
+
+    </div>
+
+    {/* Right Side */}
+    <div className="flex items-center gap-2 text-xs font-semibold text-slate-400">
+
+      <span className="rounded-md bg-white/5 px-2 py-1">
+        JavaScript
+      </span>
+
+      <span className="rounded-md bg-white/5 px-2 py-1">
+        Auto Sync
+      </span>
+
+    </div>
+
+  </div>
+
+  {/* Editor Body */}
+  <div className="min-h-[550px] p-5">
+
+    <div className="flex h-full min-h-[510px] items-center justify-center rounded-xl border border-dashed border-white/10">
+
+      <p className="text-sm text-slate-500">
+        Collaborative editor coming soon...
+      </p>
+
+    </div>
+
+  </div>
+
+</section>
 
   {/* Activity Panel */}
-  <aside>
+<aside className="grid gap-4">
 
-  </aside>
+  {/* Session Card */}
+  <div className="rounded-2xl border border-white/10 bg-white/5 p-4 shadow-sm backdrop-blur">
+
+    <p className="text-sm font-semibold text-slate-200">
+      Session
+    </p>
+
+    <div className="mt-4 grid grid-cols-2 gap-3">
+
+      <div className="rounded-xl bg-white/5 p-3">
+        <span className="block text-2xl font-black text-white">
+          {clients.length}
+        </span>
+
+        <span className="text-xs text-slate-500">
+          Online
+        </span>
+      </div>
+
+      <div className="rounded-xl bg-white/5 p-3">
+        <span className="block text-2xl font-black text-white">
+          Live
+        </span>
+
+        <span className="text-xs text-slate-500">
+          Status
+        </span>
+      </div>
+
+    </div>
+
+  </div>
+
+  {/* Activity Feed */}
+  <div className="rounded-2xl border border-white/10 bg-white/5 p-4 shadow-sm backdrop-blur">
+
+    <p className="text-sm font-semibold text-slate-200">
+      Activity
+    </p>
+
+    <div className="mt-4 space-y-4">
+
+      <div className="flex gap-3">
+
+        <span className="mt-1 size-2 rounded-full bg-cyan-300" />
+
+        <div>
+          <p className="text-sm text-slate-300">
+            <span className="font-semibold text-white">
+              {username}
+            </span>{" "}
+            created this room
+          </p>
+
+          <p className="text-xs text-slate-500">
+            just now
+          </p>
+        </div>
+
+      </div>
+
+    </div>
+
+  </div>
+
+</aside>
 
 </main>
-        </div>
+    </div>
 
     </div>
   );

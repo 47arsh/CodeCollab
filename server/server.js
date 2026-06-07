@@ -37,13 +37,19 @@ function getAllConnectedClients(roomId) {
 io.on("connection", (socket) => {
   console.log("New client connected:", socket.id);
 
+  socket.on("code-change", ({ roomId, code }) => {
+    socket.to(roomId).emit("code-change", { 
+        code,
+     });
+    });
+
   socket.on("join" , ({roomId, username}) => {
     userSocketMap[socket.id] = username;
 
     socket.join(roomId);
 
     console.log(`${username} joined room: ${roomId}`);
-    
+
     io.to(roomId).emit("joined", {
       clients: getAllConnectedClients(roomId),  
       socketId: socket.id,
@@ -53,8 +59,20 @@ io.on("connection", (socket) => {
 
   socket.on("disconnect", () => {
     const username = userSocketMap[socket.id] || "Unknown user";
-    console.log("Client disconnected:", socket.id, "Username:", username);
+    
+    for(const roomId of socket.rooms){
+        if(roomId !== socket.id){
+            io.to(roomId).emit("joined", {
+                clients : getAllConnectedClients(roomId).filter(client => client.socketId !== socket.id),
+                socketId: socket.id,
+                username,
+            })
+        }
+    }
+
     delete userSocketMap[socket.id];
+
+    console.log(`${username} disconnected:`, socket.id);
   });
 });
 

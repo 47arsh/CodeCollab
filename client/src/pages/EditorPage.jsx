@@ -35,6 +35,7 @@ const EditorPage = () => {
 
     return () => {
       console.log("Disconnecting from socket server...")
+      socket.off("joined");
       socket.disconnect();
     }
   }, []);
@@ -176,7 +177,10 @@ const EditorPage = () => {
   {/* Editor Body */}
   <div className="min-h-[550px] p-5">
 
-    <Editor language={language} />
+    <Editor 
+        language={language}
+        roomId={roomId}
+    />
 
   </div>
 

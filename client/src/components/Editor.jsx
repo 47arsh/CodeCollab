@@ -1,17 +1,33 @@
-import React, { useState } from "react";
+import React, { useState,useEffect } from "react";
 import CodeMirror from "@uiw/react-codemirror";
 import { javascript } from "@codemirror/lang-javascript";
 import { dracula } from "@uiw/codemirror-theme-dracula";
 import { cpp } from "@codemirror/lang-cpp";
 import { python } from "@codemirror/lang-python";
 import { java } from "@codemirror/lang-java";
+import { socket } from "../socket.js";
+const Editor = ({language , roomId}) => {
+  console.log("Editor component rendered with language:", language);
 
-const Editor = ({language}) => {
-    console.log("Editor component rendered with language:", language);
   const [code, setCode] = useState("// Start coding...");
+
+  useEffect(() => {
+    socket.on("code-change", ({ code }) => {
+      setCode(code);
+    });
+
+    return () => {
+      socket.off("code-change");
+    };
+    }, []);
 
   const handleCodeChange = (value) => {
     setCode(value);
+    socket.emit("code-change", {
+      roomId,
+      code: value,
+    });
+    // console.log(code);
   };
 
   const languageExtensions = {

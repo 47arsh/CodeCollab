@@ -21,6 +21,14 @@ app.get("/", (req, res) => {
   res.send("CodeCollab Server Running");
 });
 
+io.on("connection", (socket) => {
+  console.log("New client connected:", socket.id);
+
+  socket.on("disconnect", () => {
+    console.log("Client disconnected:", socket.id);
+  });
+});
+
 server.listen(PORT, () => {
   console.log(`Server running on port ${PORT}`);
 });

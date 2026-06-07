@@ -4,6 +4,7 @@ import Client from "../components/Client";
 import Editor from "../components/Editor";
 import { socket } from "../socket.js";
 import {toast} from 'react-hot-toast';
+import axios from "axios";
 
 const EditorPage = () => {
   const { roomId } = useParams();
@@ -17,6 +18,9 @@ const EditorPage = () => {
     },
   ]);
   const [language , setLanguage] = useState("javascript");
+  const [output, setOutput] = useState("");
+  const [isRunning, setIsRunning] = useState(false);
+
   const codeRef = useRef("");
 
   useEffect(()=>{
@@ -65,6 +69,31 @@ const EditorPage = () => {
     navigate('/')
   }
 
+  const handleRunCode = async () => {
+    try{
+      setIsRunning(true);
+      setOutput("Running code...");
+      const response = await axios.post("http://localhost:5000/run", {
+        code: codeRef.current,
+      });
+
+      const result = response.data;
+
+      if(result.exitCode === 0){
+        setOutput(result.stdout);
+      }
+      else{
+        setOutput(result.stderr);
+      }
+    }
+    catch(err){
+      toast.error('Error running code')
+      // console.error("Error running code:", err)
+    }
+    finally{
+      setIsRunning(false);
+    }
+  }
   const languages = [ "javascript", "python", "java", "cpp" ];
 
   return (
@@ -87,6 +116,13 @@ const EditorPage = () => {
               <span className="rounded-full border border-white/10 bg-white/5 px-4 py-2 text-sm text-slate-300 shadow-sm backdrop-blur">
                 Live Session
               </span>
+              <button 
+                onClick={handleRunCode}
+                disabled={isRunning}
+                className = "px-4 py-2 rounded-full bg-cyan-300 font-bold text-slate-950 shadow-lg shadow-cyan-500/20 transition hover:bg-cyan-200 focus:outline-none focus:ring-4 focus:ring-cyan-300/30 disabled:opacity-50 disabled:cursor-not-allowed"
+              >
+                  {isRunning ? "Running..." : "Run Code"}
+              </button>
               <button onClick={copyRoomId} className="rounded-full border border-white/10 bg-white/5 px-4 py-2 text-sm text-slate-300 shadow-sm backdrop-blur">
                 Copy ROOM-ID
               </button>
@@ -268,6 +304,14 @@ const EditorPage = () => {
 </aside>
 
 </main>
+<div className="mt-5 rounded-2xl border border-white/10 bg-white/5 p-4 text-sm text-slate-300 shadow-sm backdrop-blur">
+        <h3 className="text-center text-lg font-bold text-white">
+          Output:
+        </h3>
+        <pre className="mt-2 max-h-40 overflow-auto rounded-md bg-slate-900 p-3 text-xs text-green-400">
+          {output || "Run your code to see the output here..."}
+        </pre>
+</div>
     </div>
 
     </div>

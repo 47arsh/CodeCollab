@@ -2,10 +2,13 @@ const express = require("express");
 const http = require("http");
 const cors = require("cors");
 const { Server } = require("socket.io");
+const axios = require("axios");
+const executeCode = require("./services/executeCode.js");
 
 
 const app = express();
 app.use(cors());
+app.use(express.json());
 
 const server = http.createServer(app);
 
@@ -33,6 +36,28 @@ function getAllConnectedClients(roomId) {
     };
   });
 }
+
+app.post("/run", async (req, res) => {
+    try {
+
+        const { code } = req.body;
+
+        const result = await executeCode(code);
+
+        res.json(result);
+
+    } catch (error) {
+
+        console.log("Error running code:", error);
+
+        res.status(500).json({
+            stdout: "",
+            stderr: "Internal Server Error",
+            exitCode: 1
+        });
+
+    }
+});
 
 io.on("connection", (socket) => {
     console.log("New client connected:", socket.id);

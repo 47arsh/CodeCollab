@@ -1,4 +1,4 @@
-import React , {useState , useEffect} from "react";
+import React , {useState , useEffect , useRef} from "react";
 import { Link, useParams , useNavigate } from "react-router-dom";
 import Client from "../components/Client";
 import Editor from "../components/Editor";
@@ -17,6 +17,7 @@ const EditorPage = () => {
     },
   ]);
   const [language , setLanguage] = useState("javascript");
+  const codeRef = useRef("");
 
   useEffect(()=>{
     console.log("Connecting to socket server...")
@@ -28,10 +29,18 @@ const EditorPage = () => {
       username,
     })
 
-    socket.on("joined" , (data) => {
-      console.log("Joined event received:", data);
-      setClients(data.clients);
-    })
+    socket.on("joined" , ({clients, username, socketId}) => {
+      setClients(clients);
+
+      console.log(`${username} joined the room. Socket ID: ${socketId}`);
+
+      if(socketId !== socket.id){
+        socket.emit("sync-code",{
+          socketId,
+          code: codeRef.current,
+        });
+      }
+    });
 
     return () => {
       console.log("Disconnecting from socket server...")
@@ -180,6 +189,7 @@ const EditorPage = () => {
     <Editor 
         language={language}
         roomId={roomId}
+        codeRef={codeRef}
     />
 
   </div>

@@ -35,12 +35,18 @@ function getAllConnectedClients(roomId) {
 }
 
 io.on("connection", (socket) => {
-  console.log("New client connected:", socket.id);
+    console.log("New client connected:", socket.id);
 
-  socket.on("code-change", ({ roomId, code }) => {
-    socket.to(roomId).emit("code-change", { 
-        code,
-     });
+    socket.on("code-change", ({ roomId, code }) => {
+        socket.to(roomId).emit("code-change", { 
+            code,
+        });
+    });
+
+    socket.on("sync-code", ({ socketId, code }) => {
+        io.to(socketId).emit("code-change", { 
+            code,
+        });
     });
 
   socket.on("join" , ({roomId, username}) => {

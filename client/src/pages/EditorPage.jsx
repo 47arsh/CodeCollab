@@ -343,11 +343,17 @@ const EditorPage = () => {
     )}
   </div>
 
-  <pre className="text-green-400 whitespace-pre-wrap font-mono text-sm">
-    {executionResult.stdout ||
-      executionResult.stderr ||
-      "Run your code to see the output..."}
-  </pre>
+  <pre
+  className={`whitespace-pre-wrap font-mono text-sm ${
+    executionResult.exitCode === 1
+      ? "text-red-400"
+      : "text-green-400"
+  }`}
+>
+  {executionResult.stdout ||
+    executionResult.stderr ||
+    "Run your code to see the output..."}
+</pre>
 </div>
     </div>
 

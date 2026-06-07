@@ -5,14 +5,7 @@ import Editor from "../components/Editor";
 import { socket } from "../socket.js";
 const EditorPage = () => {
 
-  useEffect(()=>{
-    console.log("Connecting to socket server...")
-    socket.connect();
-    return () => {
-      console.log("Disconnecting from socket server...")
-      socket.disconnect();
-    }
-  }, []);
+
   const { roomId } = useParams();
   const navigate = useNavigate();
 
@@ -23,8 +16,28 @@ const EditorPage = () => {
       username,
     },
   ]);
-
   const [language , setLanguage] = useState("javascript");
+
+  useEffect(()=>{
+    console.log("Connecting to socket server...")
+
+    socket.connect();
+
+    socket.emit("join",{
+      roomId,
+      username,
+    })
+
+    socket.on("joined" , (data) => {
+      console.log("Joined event received:", data);
+      setClients(data.clients);
+    })
+
+    return () => {
+      console.log("Disconnecting from socket server...")
+      socket.disconnect();
+    }
+  }, []);
   const copyRoomId = async() => {
     try{
       await navigator.clipboard.writeText(roomId)

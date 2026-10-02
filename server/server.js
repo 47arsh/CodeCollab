@@ -1,5 +1,6 @@
 const express = require("express");
 const http = require("http");
+const net = require("node:net");
 const cors = require("cors");
 const { Server } = require("socket.io");
 const { YSocketIO } = require("y-socket.io/dist/server");
@@ -7,9 +8,17 @@ const axios = require("axios");
 const executeCode = require("./services/executeCode.js");
 
 
+const allowedOrigins = [
+  "https://code-collab-chi-nine.vercel.app",
+  "http://localhost:5173",
+  "http://localhost:5174",
+  "http://127.0.0.1:5173",
+  "http://127.0.0.1:5174"
+];
+
 const app = express();
 app.use(cors({
-    origin: "https://code-collab-chi-nine.vercel.app",
+    origin: allowedOrigins,
     methods: ["GET", "POST"],
 }));
 app.use(express.json());
@@ -18,7 +27,7 @@ const server = http.createServer(app);
 
 const io = new Server(server, {
   cors: {
-    origin: "https://code-collab-chi-nine.vercel.app",
+    origin: allowedOrigins,
     methods: ["GET", "POST"],
   },
 });
@@ -38,9 +47,75 @@ console.log("[YSocketIO startup]", {
   namespacePattern: "/^\\/yjs\\|.*$/",
 });
 
+ysocketio.on("document-loaded", (doc) => {
+  console.log(`[YSocketIO Server] Document loaded for room: "${doc.name}"`);
+});
+
+ysocketio.on("document-update", (doc, update) => {
+  console.log(`[YSocketIO Server] Document update on room: "${doc.name}" (${update.length} bytes)`);
+});
+
+ysocketio.on("all-document-connections-closed", (doc) => {
+  console.log(`[YSocketIO Server] All connections closed for room: "${doc.name}"`);
+});
+
+const yjsNsp = io.of(/^\/yjs\|.*$/);
+yjsNsp.on("connection", (socket) => {
+  console.log(`[YSocketIO Server] Client ${socket.id} connected to Yjs namespace: ${socket.nsp.name}`);
+});
+
 const userSocketMap = {};
 
-const PORT = process.env.PORT || 5000;
+const PORT = Number(process.env.PORT) || 5000;
+
+function isPortTaken(port, host) {
+  return new Promise((resolve) => {
+    const probe = net.createServer();
+
+    probe.once("error", (error) => {
+      if (error.code === "EADDRNOTAVAIL") {
+        resolve(false);
+        return;
+      }
+
+      resolve(true);
+    });
+
+    probe.once("listening", () => {
+      probe.close(() => resolve(false));
+    });
+
+    probe.listen(port, host);
+  });
+}
+
+async function getAvailablePort(startPort = PORT) {
+  let candidatePort = startPort;
+
+  while (true) {
+    const ipv4Busy = await isPortTaken(candidatePort, "127.0.0.1");
+    if (!ipv4Busy) {
+      const ipv6Busy = await isPortTaken(candidatePort, "::1");
+      if (!ipv6Busy) {
+        return candidatePort;
+      }
+    }
+
+    candidatePort += 1;
+  }
+}
+
+async function startServer(port = PORT) {
+  const availablePort = await getAvailablePort(port);
+
+  if (availablePort !== port) {
+    console.warn(`[Server] Port ${port} is busy. Starting on port ${availablePort} instead.`);
+  }
+
+  server.listen(availablePort, "0.0.0.0", () => {
+    console.log(`Server running on port ${availablePort}`);
+  });
+}
 
 app.get("/", (req, res) => {
   res.send("CodeCollab Server Running");
@@ -114,6 +189,13 @@ io.on("connection", (socket) => {
   });
 });
 
-server.listen(PORT, () => {
-  console.log(`Server running on port ${PORT}`);
-});
+if (require.main === module) {
+  startServer(PORT);
+}
+
+module.exports = {
+  app,
+  server,
+  getAvailablePort,
+  startServer,
+};

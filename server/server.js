@@ -31,6 +31,9 @@ console.log("[YSocketIO startup]", {
   workingDirectory: process.cwd(),
   serverEntry: __filename,
   packageEntry: require.resolve("y-socket.io/dist/server"),
+  packageVersion: require("y-socket.io/package.json").version,
+  constructionSucceeded: true,
+  initializeSucceeded: true,
   namespaceRegistered: Boolean(ysocketio.nsp),
   namespacePattern: "/^\\/yjs\\|.*$/",
 });

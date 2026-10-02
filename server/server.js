@@ -2,6 +2,7 @@ const express = require("express");
 const http = require("http");
 const cors = require("cors");
 const { Server } = require("socket.io");
+const { YSocketIO } = require("y-socket.io/dist/server");
 const axios = require("axios");
 const executeCode = require("./services/executeCode.js");
 
@@ -21,6 +22,9 @@ const io = new Server(server, {
     methods: ["GET", "POST"],
   },
 });
+
+const ysocketio = new YSocketIO(io);
+ysocketio.initialize();
 
 const userSocketMap = {};
 
@@ -64,18 +68,6 @@ app.post("/run", async (req, res) => {
 
 io.on("connection", (socket) => {
     console.log("New client connected:", socket.id);
-
-    socket.on("code-change", ({ roomId, code }) => {
-        socket.to(roomId).emit("code-change", { 
-            code,
-        });
-    });
-
-    socket.on("sync-code", ({ socketId, code }) => {
-        io.to(socketId).emit("code-change", { 
-            code,
-        });
-    });
 
   socket.on("join" , ({roomId, username}) => {
     userSocketMap[socket.id] = username;

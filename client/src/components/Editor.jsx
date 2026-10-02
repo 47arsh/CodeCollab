@@ -1,43 +1,48 @@
-import React, { useState,useEffect,useRef } from "react";
+import React, { useEffect, useMemo, useRef, useState } from "react";
 import CodeMirror from "@uiw/react-codemirror";
 import { javascript } from "@codemirror/lang-javascript";
 import { dracula } from "@uiw/codemirror-theme-dracula";
 import { cpp } from "@codemirror/lang-cpp";
 import { python } from "@codemirror/lang-python";
 import { java } from "@codemirror/lang-java";
-import { socket } from "../socket.js";
-const Editor = ({language , roomId , codeRef}) => {
-  console.log("Editor component rendered with language:", language);
+import * as Y from "yjs";
+import { SocketIOProvider } from "y-socket.io";
+import { yCollab } from "y-codemirror.next";
 
-  const [code, setCode] = useState("// Start coding...");
-  const editorViewRef = useRef(null);
+const Editor = ({ language, roomId, codeRef }) => {
+  const providerRef = useRef(null);
+  const ytextRef = useRef(null);
+  const [sharedExtension, setSharedExtension] = useState(null);
 
   useEffect(() => {
-    socket.on("code-change", ({ code }) => {
-      setCode(code);
-      codeRef.current = code;
+    if (!roomId) return undefined;
+
+    const ydoc = new Y.Doc();
+    const ytext = ydoc.getText("codemirror");
+    const provider = new SocketIOProvider(import.meta.env.VITE_BACKEND_URL, roomId, ydoc, {
+      autoConnect: true,
     });
+
+    providerRef.current = provider;
+    ytextRef.current = ytext;
+
+    const updateCodeRef = () => {
+      codeRef.current = ytext.toString();
+    };
+
+    ytext.observe(updateCodeRef);
+    updateCodeRef();
+    setSharedExtension(yCollab(ytext, provider.awareness));
 
     return () => {
-      socket.off("code-change");
+      ytext.unobserve(updateCodeRef);
+      provider.destroy();
+      ydoc.destroy();
+      providerRef.current = null;
+      ytextRef.current = null;
+      setSharedExtension(null);
     };
-}, []);
-
-    useEffect(() => {
-        editorViewRef.current?.focus();
-    },[])
-
-  const handleCodeChange = (value) => {
-    setCode(value);
-
-    codeRef.current = value;
-
-    socket.emit("code-change", {
-      roomId,
-      code: value,
-    });
-    // console.log(code);
-  };
+  }, [roomId]);
 
   const languageExtensions = {
     javascript: javascript(),
@@ -45,18 +50,17 @@ const Editor = ({language , roomId , codeRef}) => {
     java: java(),
     cpp: cpp(),
   };
+
+  const extensions = useMemo(() => {
+    return [languageExtensions[language] || javascript(), sharedExtension].filter(Boolean);
+  }, [language, sharedExtension]);
+
   return (
     <div className="h-full">
       <CodeMirror
-        value={code}
         height="100%"
         theme={dracula}
-        extensions={[languageExtensions[language] || javascript()]}
-        onChange={handleCodeChange}
-        onCreateEditor={(editorView) => {
-          editorViewRef.current = editorView;
-        }
-        }
+        extensions={extensions}
       />
     </div>
   );

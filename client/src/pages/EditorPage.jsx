@@ -41,13 +41,6 @@ const EditorPage = () => {
       setClients(clients);
 
       console.log(`${username} joined the room. Socket ID: ${socketId}`);
-
-      if(socketId !== socket.id){
-        socket.emit("sync-code",{
-          socketId,
-          code: codeRef.current,
-        });
-      }
     });
 
     return () => {

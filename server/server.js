@@ -25,6 +25,15 @@ const io = new Server(server, {
 
 const ysocketio = new YSocketIO(io);
 ysocketio.initialize();
+console.log("[YSocketIO startup]", {
+  renderCommit: process.env.RENDER_GIT_COMMIT || "unavailable",
+  renderService: process.env.RENDER_SERVICE_NAME || "unavailable",
+  workingDirectory: process.cwd(),
+  serverEntry: __filename,
+  packageEntry: require.resolve("y-socket.io/dist/server"),
+  namespaceRegistered: Boolean(ysocketio.nsp),
+  namespacePattern: "/^\\/yjs\\|.*$/",
+});
 
 const userSocketMap = {};
 

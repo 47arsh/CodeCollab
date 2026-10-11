@@ -8,6 +8,7 @@ const axios = require("axios");
 const executeCode = require("./services/executeCode.js");
 const pool = require("./db.js");
 const { setupYjsPersistence } = require("./services/yjsPersistence.js");
+const { runMigrations } = require("./migrate.js");
 
 
 const allowedOrigins = [
@@ -109,14 +110,31 @@ async function getAvailablePort(startPort = PORT) {
 }
 
 async function startServer(port = PORT) {
+  if (!process.env.DATABASE_URL) {
+    const errorMsg = "[Startup] FATAL: DATABASE_URL is not set. Refusing to start without persistence.";
+    console.error(errorMsg);
+    throw new Error(errorMsg);
+  }
+
+  try {
+    const applied = await runMigrations(pool);
+    console.log(`[Startup] PostgreSQL connected and migrations verified (newly applied: ${applied.length}).`);
+  } catch (err) {
+    console.error("[Startup] FATAL: Database migration failed:", err.message);
+    throw err;
+  }
+
   const availablePort = await getAvailablePort(port);
 
   if (availablePort !== port) {
     console.warn(`[Server] Port ${port} is busy. Starting on port ${availablePort} instead.`);
   }
 
-  server.listen(availablePort, "0.0.0.0", () => {
-    console.log(`Server running on port ${availablePort}`);
+  return new Promise((resolve) => {
+    server.listen(availablePort, "0.0.0.0", () => {
+      console.log(`Server running on port ${availablePort}`);
+      resolve(availablePort);
+    });
   });
 }
 
@@ -193,7 +211,9 @@ io.on("connection", (socket) => {
 });
 
 if (require.main === module) {
-  startServer(PORT);
+  startServer(PORT).catch(() => {
+    process.exit(1);
+  });
 }
 
 module.exports = {

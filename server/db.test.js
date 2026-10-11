@@ -88,6 +88,25 @@ test("Inserting and retrieving a sample Yjs document update", async (t) => {
   await pool.query("DELETE FROM yjs_updates WHERE room_id = $1;", [testRoomId]);
 });
 
+test("startServer rejects when DATABASE_URL is missing", async () => {
+  const { startServer } = require("./server.js");
+  const origDbUrl = process.env.DATABASE_URL;
+  delete process.env.DATABASE_URL;
+
+  try {
+    await assert.rejects(
+      async () => {
+        await startServer(0);
+      },
+      {
+        message: /DATABASE_URL is not set/,
+      }
+    );
+  } finally {
+    process.env.DATABASE_URL = origDbUrl;
+  }
+});
+
 test.after(async () => {
   await pool.end();
 });

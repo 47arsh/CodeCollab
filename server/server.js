@@ -6,6 +6,8 @@ const { Server } = require("socket.io");
 const { YSocketIO } = require("y-socket.io/dist/server");
 const axios = require("axios");
 const executeCode = require("./services/executeCode.js");
+const pool = require("./db.js");
+const { setupYjsPersistence } = require("./services/yjsPersistence.js");
 
 
 const allowedOrigins = [
@@ -33,6 +35,7 @@ const io = new Server(server, {
 });
 
 const ysocketio = new YSocketIO(io);
+setupYjsPersistence(ysocketio, pool);
 ysocketio.initialize();
 console.log("[YSocketIO startup]", {
   renderCommit: process.env.RENDER_GIT_COMMIT || "unavailable",
@@ -198,4 +201,5 @@ module.exports = {
   server,
   getAvailablePort,
   startServer,
+  ysocketio,
 };
